@@ -1,2 +1,4 @@
 logistic-regression/.ipynb_checkpoints/
 *.docx
+logistic-regression/tmp/
+logistic-regression/.vscode/
