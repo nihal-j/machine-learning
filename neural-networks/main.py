@@ -2,6 +2,8 @@ from neural_network import Model
 from sklearn.model_selection import train_test_split
 import numpy as np
 
+np.random.seed(42)
+
 def normalize(data, method='min-max'):
     
     '''
@@ -43,7 +45,7 @@ def train_test_validation_split(X, t, test_ratio=0.33):
         Make use of sklearn's `train_test_split` to split `X` into train, test and validation sets.
     '''
     
-    X_train, X_test, t_train, t_test = train_test_split(X, t, test_size=test_ratio, random_state=42)
+    X_train, X_test, t_train, t_test = train_test_split(X, t, test_size=test_ratio, random_state=3)
     X_valid, X_test, t_valid, t_test = train_test_split(X_test, t_test, test_size=0.5, random_state=42)
     
     data = {
@@ -89,9 +91,33 @@ if __name__ == '__main__':
     t_val = data['t_valid'].reshape(1, -1)
 
     L_ = 3
-    n_ = [10, 20, 12, 1]
+    n_ = [10, 15, 4, 1]
     activation_ = 'relu'
-    eta_ = 0.0001
-    model = Model(L_, n_, activation_='relu', learning_rate_=eta_, max_iters_=5000)
+    eta_ = 0.00005
+    model = Model(L_, n_, activation_='relu', learning_rate_=eta_, max_iters_=2000)
 
     print(model.fit(X_train, t_train))
+
+    preds = model.predict(X_test)
+    print(model.calculate_accuracy(preds, t_test))
+
+    """
+    Train > Test
+    ------------
+    L_ = 3
+    n_ = [10, 15, 6, 1]
+    activation_ = 'relu'
+    eta_ = 0.00001
+
+    L_ = 3
+    n_ = [10, 8, 4, 1]
+    activation_ = 'relu'
+    eta_ = 0.00001
+
+    Do test on X_test with the following
+    L_ = 3
+    n_ = [10, 15, 4, 1]
+    activation_ = 'relu'
+    eta_ = 0.00005
+    model = Model(L_, n_, activation_='relu', learning_rate_=eta_, max_iters_=2000)
+    """

@@ -5,7 +5,7 @@ class Model:
     
     def __init__(self, L_, n_, w_={}, b_={}, activation_='relu', learning_rate_=0.0001, max_iters_=1000):
         
-        """
+        '''
             A Model is a deep neural network whose configuration is contained in `n`. Its paramters are
             defined in `w` and biases in `b`. The activation functions for hidden layers can be specified as
             'relu' or 'sigmoid'. The output layer always uses 'sigmoid' activation.
@@ -18,7 +18,7 @@ class Model:
                 activation_:    activation for each hidden layer
                 learning_rate_: learning rate for updation of weights
                 max_iters_:     maximum number of iterations during training
-        """
+        '''
         
         self.L = L_
         self.n = n_
@@ -58,8 +58,8 @@ class Model:
 
     def activation_function(self, a):
 
-        #if self.activation == 'relu':
-        return self.relu(a)
+        if self.activation == 'relu':
+            return self.relu(a)
 
         if self.activation == 'sigmoid':
             return self.sigmoid(a)
@@ -67,11 +67,11 @@ class Model:
 
     def derivative(self, a):
 
-        #if self.activation == 'relu':
-        x = np.copy(a)
-        x[x > 0] = 1
-        x[x < 0] = 0
-        return x
+        if self.activation == 'relu':
+            x = np.copy(a)
+            x[x > 0] = 1
+            x[x < 0] = 0
+            return x
 
         if self.activation == 'sigmoid':
             return self.sigmoid(a)*self.sigmoid(1 - a)

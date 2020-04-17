@@ -1,4 +1,5 @@
-neural-networks/tmp
+fishers-discriminant/tmp/
+neural-networks/tmp/
 logistic-regression/.ipynb_checkpoints/
 *.docx
 logistic-regression/tmp/
