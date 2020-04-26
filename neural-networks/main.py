@@ -2,7 +2,7 @@ from neural_network import Model
 from sklearn.model_selection import train_test_split
 import numpy as np
 
-np.random.seed(42)
+np.random.seed(0)
 
 def normalize(data, method='min-max'):
     
@@ -45,8 +45,8 @@ def train_test_validation_split(X, t, test_ratio=0.33):
         Make use of sklearn's `train_test_split` to split `X` into train, test and validation sets.
     '''
     
-    X_train, X_test, t_train, t_test = train_test_split(X, t, test_size=test_ratio, random_state=3)
-    X_valid, X_test, t_valid, t_test = train_test_split(X_test, t_test, test_size=0.5, random_state=42)
+    X_train, X_test, t_train, t_test = train_test_split(X, t, test_size=test_ratio, random_state=0)
+    X_valid, X_test, t_valid, t_test = train_test_split(X_test, t_test, test_size=0.5, random_state=0)
     
     data = {
         'X_train': X_train,
@@ -72,11 +72,12 @@ def load_data(path):
 if __name__ == '__main__':
 
     path = 'data/data.npy'
+    # path = 'data.npy'
     data = load_data(path)
 
     # from here each sample is a row
     X, t = segregate_target(data)
-    data = train_test_validation_split(X, t, test_ratio=0.20)
+    data = train_test_validation_split(X, t, test_ratio=0.30)
 
     data['X_train'] = normalize(data['X_train'])
     data['X_valid'] = normalize(data['X_valid'])
@@ -90,16 +91,20 @@ if __name__ == '__main__':
     X_val = data['X_valid'].T
     t_val = data['t_valid'].reshape(1, -1)
 
+    # print(X_train.shape)
+    # print(X_train)
     L_ = 3
-    n_ = [10, 15, 4, 1]
+    n_ = [10, 8, 5, 1]
     activation_ = 'relu'
-    eta_ = 0.00005
-    model = Model(L_, n_, activation_='relu', learning_rate_=eta_, max_iters_=2000)
+    eta_ = 0.00015
+    model = Model(L_, n_, activation_='relu', learning_rate_=eta_, max_iters_=1000)
 
     print(model.fit(X_train, t_train))
 
     preds = model.predict(X_test)
     print(model.calculate_accuracy(preds, t_test))
+
+    # print(model.w)
 
     """
     Train > Test

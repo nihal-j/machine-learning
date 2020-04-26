@@ -1,5 +1,7 @@
 import numpy as np
 
+np.random.seed(1)
+
 class Model:
 
     '''
@@ -35,14 +37,14 @@ class Model:
 
         '''
             Initializes parameters `w` and `b` depending on the choice given by `random_init`.
-            Shape of `w` is (dims, 1) => it is a column vector.
+            Shape of `w` is (1, dims) => it is a row vector.
             `b` is initialized as 0 always.
         '''
         
         if self.random_init:
-            self.w = np.random.randn(dims).reshape(-1, 1)
+            self.w = np.random.randn(dims).reshape(1, -1)
         else:
-            self.w = np.zeros((dims, 1))
+            self.w = np.zeros((1, dims))
         self.b = 0
     
     def sigmoid(self, x):
@@ -67,26 +69,12 @@ class Model:
         M = X.shape[1]
         preds = np.zeros((1, M))
         
-        probabilities = self.sigmoid(np.dot(self.w.T, X) + self.b)
+        probabilities = self.sigmoid(np.dot(self.w, X) + self.b)
         
         for i in range(M):
             preds[0][i] = 0 if probabilities[0][i] <= 0.5 else 1
             
         return preds
-    
-    def calculate_accuracy(self, y, t):
-        
-        return 100 - (np.mean(np.abs(y - t))*100)
-    
-    def calculate_fscore(self, y, t):
-        
-        intersection = np.sum(y*t)
-        precision = intersection / np.sum(y)
-        recall = intersection / np.sum(t)
-        
-        fscore = (2*precision*recall)/(precision + recall)
-        
-        return fscore
         
     
     def fit(self, X_train, t_train):
@@ -103,22 +91,21 @@ class Model:
         self.initalize_parameters(N)
         costs = []
         
-        for iteration in range(self.maxIters - 1):
+        for iteration in range(self.maxIters):
             
             # forward calculation
-            y = self.sigmoid(np.dot(self.w.T, X_train) + self.b)
+            y = self.sigmoid(np.dot(self.w, X_train) + self.b)
             
             # cost calculation
             if self.regularization == 'l2':
-                reg_term = self.lamb*np.dot(self.w.T, self.w)/2
+                reg_term = self.lamb*np.dot(self.w, self.w.T)/2
             elif self.regularization == 'l1':
-                reg_term = self.lamb*np.sum(np.abs(self.w)/2)
+                reg_term = self.lamb*np.sum(np.abs(self.w))/2
                 
             cost = -np.sum((t_train*np.log(y)) + ((1 - t_train)*np.log((1 - y)))) + reg_term
             costs.append(cost)
             
             # gradient calculation
-            
             if self.regularization == 'l2':
                 reg_term = self.lamb*self.w
             elif self.regularization == 'l1':
@@ -126,7 +113,7 @@ class Model:
                 tmp[tmp == 0] = 1e-5
                 reg_term = self.lamb*(tmp/np.abs(tmp))
                 
-            dw = np.dot(X_train, (y - t_train).T) + reg_term
+            dw = np.dot((y - t_train), X_train.T) + reg_term
             db = np.sum(y - t_train)
             
             # backward update
@@ -134,7 +121,4 @@ class Model:
             self.b = self.b - self.learning_rate*db
             
         predictions = self.predict(X_train)
-        train_accuracy = self.calculate_accuracy(predictions, t_train)
-        print('Training accuracy is: ', train_accuracy)
-        
-        return costs
+        return predictions, costs
