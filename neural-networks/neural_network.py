@@ -1,9 +1,9 @@
 import numpy as np
-np.set_printoptions(precision=4, linewidth=100, suppress=True)
+np.random.seed(3)
 
 class Model:
     
-    def __init__(self, L_, n_, w_={}, b_={}, activation_='relu', learning_rate_=0.0001, max_iters_=1000):
+    def __init__(self, n_, activations_, w_={}, b_={}, learning_rate_=0.0001, max_iters_=1000):
         
         '''
             A Model is a deep neural network whose configuration is contained in `n`. Its paramters are
@@ -11,31 +11,29 @@ class Model:
             'relu' or 'sigmoid'. The output layer always uses 'sigmoid' activation.
             
             Arguments:
-                L_:             number of layers in neural network (excluding input layer)
                 n_:             neural network configuration, specifically `n_[i]` is the number of nodes in layer i
                 w_:             weight parameters for each layer, specifically `w_[i]` is the weight matrix of layer i
                 b_:             biases for each layer, specifically `b_[i]` is the bias vector for layer i
-                activation_:    activation for each hidden layer
+                activations_:   activations for each hidden layer. `activations[0]` SHOULD be None
                 learning_rate_: learning rate for updation of weights
                 max_iters_:     maximum number of iterations during training
         '''
         
-        self.L = L_
         self.n = n_
+        self.L = len(self.n) - 1
+        self.activations = activations_
         self.w = w_
         self.b = b_
-        self.activation = activation_
         self.learning_rate = learning_rate_
         self.max_iters = max_iters_
-
         self.initialize_parameters()
         
     
     def initialize_parameters(self):
     
-        # the ith hidden layer should be of shape (n[i - 1], n[i])
+        # the ith hidden layer should be of shape (n[i], n[i - 1])
         for i in range(1, self.L + 1):
-            self.w[i] = np.random.randn(self.n[i - 1], self.n[i])
+            self.w[i] = np.random.randn(self.n[i], self.n[i - 1])
             self.b[i] = np.random.randn(self.n[i], 1)
             
             
@@ -44,37 +42,54 @@ class Model:
         x = np.copy(a)
         x[x < -15] = -15
         x[x > 15] = 15
-
         return 1/(1 + np.exp(-x))
     
 
     def relu(self, a):
 
         x = np.copy(a)
-        x[x < 0] = 0
-
+        x[x < 0] = 0.0
         return x
 
 
-    def activation_function(self, a):
+    def tanh(self, a):
 
-        if self.activation == 'relu':
+        x = 2*np.copy(a)
+        x[x < -15] = -15
+        x[x > 15] = 15
+        return (np.exp(x) - 1)/(np.exp(x) + 1)
+
+
+    def activation_function(self, a, layer):
+
+        '''
+            Computes the activation for ith layer. i >= 1.
+            i = 0 corresponds to input layer and has no activation
+        '''
+
+        if self.activations[layer] == 'relu':
             return self.relu(a)
 
-        if self.activation == 'sigmoid':
+        if self.activations[layer] == 'sigmoid':
             return self.sigmoid(a)
+
+        if self.activations[layer] == 'tanh':
+            return self.tanh(a)
         
 
-    def derivative(self, a):
+    def derivative(self, a, layer):
 
-        if self.activation == 'relu':
+        if self.activations[layer] == 'relu':
             x = np.copy(a)
-            x[x > 0] = 1
-            x[x < 0] = 0
+            x[x >= 0] = 1.0
+            x[x < 0] = 0.0
             return x
 
-        if self.activation == 'sigmoid':
+        if self.activations[layer] == 'sigmoid':
             return self.sigmoid(a)*self.sigmoid(1 - a)
+
+        if self.activations[layer] == 'tanh':
+            return 1 - (self.tanh(a)**2)
         
     
     def forward_propagate(self, X):
@@ -83,12 +98,9 @@ class Model:
         a = {}
         z[0] = X
         M = X.shape[1]
-        for i in range(1, self.L):
-            a[i] = np.matmul(self.w[i].T, z[i - 1]).reshape(self.n[i], M) + self.b[i]
-            z[i] = self.activation_function(a[i])
-        a[self.L] = np.matmul(self.w[self.L].T, z[self.L - 1]).reshape(self.n[self.L], M) + self.b[self.L]
-        z[self.L] = self.sigmoid(a[self.L])
-
+        for i in range(1, self.L + 1):
+            a[i] = np.matmul(self.w[i], z[i - 1]) + self.b[i]
+            z[i] = self.activation_function(a[i], i)
         return a, z
     
     
@@ -99,13 +111,13 @@ class Model:
         db = {}
 
         delta[self.L] = z[self.L] - t
-        dw[self.L] = np.matmul(z[self.L - 1], delta[self.L].T)
+        dw[self.L] = np.matmul(delta[self.L], z[self.L - 1].T)
         db[self.L] = np.sum(delta[self.L], axis=1, keepdims=True)
 
         for i in range(self.L - 1, 0, -1):
 
-            delta[i] = self.derivative(a[i])*np.matmul(self.w[i + 1], delta[i + 1])
-            dw[i] = np.matmul(z[i - 1], delta[i].T)
+            delta[i] = self.derivative(a[i], i)*np.matmul(self.w[i + 1].T, delta[i + 1])
+            dw[i] = np.matmul(delta[i], z[i - 1].T)
             db[i] = np.sum(delta[i], axis=1, keepdims=True)
 
         return dw, db
@@ -123,26 +135,28 @@ class Model:
     
         a, z = self.forward_propagate(X)
         preds = np.copy(z[self.L])
-        preds[preds > 0.5] = 1
+        preds[preds >= 0.5] = 1
         preds[preds < 0.5] = 0
-
         return preds
 
+    def compute_cost(self, y, t):
 
-    def calculate_accuracy(self, y, t):
-    
-        return 100 - (np.mean(np.abs(y - t))*100)
+        y = np.copy(y)
+        y[y == 1] = 1 - 1e-20
+        y[y == 0] = 1e-20
+        return -np.sum(t*np.log(y) + (1 - t)*(np.log(1 - y)))
 
     
     def fit(self, X, t):
         
+        costs = np.zeros(self.max_iters)
         for i in range(self.max_iters):
             
             a, z = self.forward_propagate(X)
+            costs[i] = self.compute_cost(z[self.L], t)
             dw, db = self.back_propagate(a, z, t)
             self.update(dw, db)
                         
         preds = self.predict(X)
-        training_accuracy = self.calculate_accuracy(preds, t)
         
-        return training_accuracy
+        return costs, preds
