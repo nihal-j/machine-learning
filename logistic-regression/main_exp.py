@@ -98,10 +98,9 @@ def calculate_accuracy(y, t):
 
 def calculate_fscore(y, t):
     
-    intersection = np.sum(y*t)
     epsilon = 1e-20
 
-    tp = np.sum(t&y) + epsilon
+    tp = np.sum(t*y) + epsilon
     pp = np.sum(y) + epsilon
     ap = np.sum(t) + epsilon
 
