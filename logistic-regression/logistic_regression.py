@@ -19,7 +19,7 @@ class Model:
             Arguments:
                 learning_rate:
                 lamb:               Regularization parameter, lambda
-                regularization:     'l1' or 'l2'
+                regularization:     'l1' or 'l2' or None
                 random_init:        True if random (Gaussian) initialization of parameters is desired
                 maxIters:
         '''
@@ -89,7 +89,7 @@ class Model:
         M = X_train.shape[1]
         
         self.initalize_parameters(N)
-        costs = []
+        costs = np.array([])
         
         for iteration in range(self.maxIters):
             
@@ -101,9 +101,11 @@ class Model:
                 reg_term = self.lamb*np.dot(self.w, self.w.T)/2
             elif self.regularization == 'l1':
                 reg_term = self.lamb*np.sum(np.abs(self.w))/2
+            elif self.regularization == None:
+                reg_term = 0
                 
             cost = -np.sum((t_train*np.log(y)) + ((1 - t_train)*np.log((1 - y)))) + reg_term
-            costs.append(cost)
+            costs = np.append(costs, cost)
             
             # gradient calculation
             if self.regularization == 'l2':
