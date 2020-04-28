@@ -1,5 +1,4 @@
 import numpy as np
-np.random.seed(3)
 
 class Model:
     
@@ -33,8 +32,10 @@ class Model:
     
         # the ith hidden layer should be of shape (n[i], n[i - 1])
         for i in range(1, self.L + 1):
-            self.w[i] = np.random.randn(self.n[i], self.n[i - 1])
-            self.b[i] = np.random.randn(self.n[i], 1)
+            self.w[i] = np.random.randn(self.n[i], self.n[i - 1])/np.sqrt(self.n[i])
+            # self.w[i] = np.random.randn(self.n[i], self.n[i - 1])*0.01
+            # self.b[i] = np.random.randn(self.n[i], 1)
+            self.b[i] = np.zeros((self.n[i], 1))
             
             
     def sigmoid(self, a):
@@ -81,8 +82,8 @@ class Model:
 
         if self.activations[layer] == 'relu':
             x = np.copy(a)
-            x[x >= 0] = 1.0
-            x[x < 0] = 0.0
+            x[x > 0] = 1.0
+            x[x <= 0] = 0.0
             return x
 
         if self.activations[layer] == 'sigmoid':
@@ -135,8 +136,8 @@ class Model:
     
         a, z = self.forward_propagate(X)
         preds = np.copy(z[self.L])
-        preds[preds >= 0.5] = 1
-        preds[preds < 0.5] = 0
+        preds[preds > 0.5] = 1
+        preds[preds <= 0.5] = 0
         return preds
 
     def compute_cost(self, y, t):
@@ -149,11 +150,23 @@ class Model:
     
     def fit(self, X, t):
         
+        print_costs = True
+        print_step = 1000
+        learning_rate_updated = False
         costs = np.zeros(self.max_iters)
         for i in range(self.max_iters):
             
             a, z = self.forward_propagate(X)
             costs[i] = self.compute_cost(z[self.L], t)
+
+            if print_costs and i % print_step == 0:
+                print('Cost after iteration ', i, ': ', costs[i])
+
+            # if i > 0 and (costs[i] - costs[i - 1])/costs[i - 1] < 0.01 and learning_rate_updated == False:
+            if i > self.max_iters/2 and learning_rate_updated == False:
+                self.learning_rate *= 0.1
+                learning_rate_updated = True
+
             dw, db = self.back_propagate(a, z, t)
             self.update(dw, db)
                         

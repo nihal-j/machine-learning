@@ -1,7 +1,9 @@
 from neural_network import Model
-from sklearn.model_selection import train_test_split
 import numpy as np
 import matplotlib.pyplot as plt
+# from sklearn.model_selection import train_test_split
+
+np.random.seed(42)
 
 def normalize(data, method='min-max'):
     
@@ -114,7 +116,8 @@ if __name__ == '__main__':
 
     # from here each sample is a row
     X, t = segregate_target(data)
-    X = normalize(X)
+    X = normalize(X, method='standardization')
+    # X = normalize(X)
     data = train_test_validation_split(X, t, test_ratio=0.15)
 
     # stacking each sample as a column
@@ -125,11 +128,14 @@ if __name__ == '__main__':
     X_val = data['X_valid'].T
     t_val = data['t_valid'].reshape(1, -1)
 
-    n_ = [10, 7, 6, 1]
-    activations_ = [None, 'relu', 'relu', 'sigmoid']
+    n_ = [10, 18, 1]
+    activations_ = [None, 'relu', 'sigmoid']
     eta_ = 0.0001
+
     model = Model(n_, activations_, learning_rate_=eta_, max_iters_=5000)
     costs, preds = model.fit(X_train, t_train)
+    print(preds)
+    print(t_train)
     print('Train size: ', X_train.shape[1])
     print('Training accuracy is: ', calculate_accuracy(preds, t_train))
     print('Training fscore is: ', calculate_fscore(preds, t_train))
@@ -150,7 +156,7 @@ if __name__ == '__main__':
     # plt.xscale(value='log')
     plt.xlabel('Iterations')
     plt.ylabel('Loss')
-    # plt.suptitle('Learning Rate=0.005, Regularization=None')
+    # plt.suptitle('Learning Rate=0.0001, Number of iterations=3000')
     # plt.plot(regs, trains)
     plt.plot(costs)
     plt.show()
@@ -161,4 +167,10 @@ if __name__ == '__main__':
     activations_ = [None, 'relu', 'relu', 'sigmoid']
     eta_ = 0.0001
     model = Model(n_, activations_, learning_rate_=eta_, max_iters_=3000)
+
+    Exploding_gradients:
+    n_ = [10, 25, 1]
+    activations_ = [None, 'relu','sigmoid']
+    eta_ = 0.001
+    model = Model(n_, activations_, learning_rate_=eta_, max_iters_=10000)
     """
