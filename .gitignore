@@ -1,3 +1,5 @@
+**/*.pickle
+**/tmp
 fishers-discriminant/tmp/
 neural-networks/tmp/
 logistic-regression/.ipynb_checkpoints/
