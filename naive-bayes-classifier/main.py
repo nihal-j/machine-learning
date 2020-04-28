@@ -58,7 +58,7 @@ if __name__ == '__main__':
         print('Fscore: ', f)
         print()
 
-    print('Validation score: ', np.mean(validation_scores))
+    print('Validation score: ', np.mean(validation_scores), '+/-', np.std(validation_scores))
 
 
     # preds = []
@@ -68,4 +68,7 @@ if __name__ == '__main__':
     # for sample, label in data:
     #         t.append(label)
     #         preds.append(model.predict(sample))
-    # print(calculate_accuracy(np.array(preds), np.array(t)))
+
+    # tests = ['This product is amazing', 'I don\'t like it at all!']
+    # print(model.predict(tests[0]))
+    # print(model.predict(tests[1]))
