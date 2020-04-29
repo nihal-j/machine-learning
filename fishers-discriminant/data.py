@@ -1,13 +1,3 @@
-# Data information
-
-# 1. variance of Wavelet Transformed image (continuous)
-# 2. skewness of Wavelet Transformed image (continuous)
-# 3. curtosis of Wavelet Transformed image (continuous)
-# 4. entropy of image (continuous)
-# 5. class (integer)
-
-# Number of instances: 1372
-
 import csv
 import numpy as np
 

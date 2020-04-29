@@ -3,10 +3,15 @@ import numpy as np
 class Model:
 
     def __init__(self):
+        # direction along which to project the vectors
         self.w = None
+        # value of threshold to be used for classification after dimensionality reduction
         self.threshold = None
+        # value of probability at the threshold (needed only for visualization purposes)
         self.thresholdY = None
+        # True if mean of class 0 is > mean of class 1
         self.inv = False
+        # scaling factor to make plots more visually appealing
         self.scale = None
 
 
@@ -44,7 +49,7 @@ class Model:
         Sw = cv0 + cv1
         self.w = np.matmul(np.linalg.inv(Sw), mean1 - mean0).reshape(-1)
         # scale w so that w[0] = 1
-        self.scale = 1/self.w[0]
+        self.scale = np.abs(1/self.w[0])
         self.w = self.w*self.scale
 
     def transform(self, data):
