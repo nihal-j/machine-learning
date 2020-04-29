@@ -154,31 +154,3 @@ if __name__ == '__main__':
     # plt.plot(regs, trains)
     plt.plot(costs)
     plt.show()
-
-'''
-Experiments
--------
-
-1.
-
-np.random.seed(0)
-data = train_test_validation_split(X, t, test_ratio=0.15)
-model = Model(learning_rate=0.01, regularization='l2', lamb=0.01, random_init=True, maxIters=10000)
-
-Train size:  962
-Training accuracy is:  98.64864864864865
-Fscore is  0.9843937575030012
-
-Test size:  205
-Testing accuracy is:  100.0
-Testing fscore is:  1.0
-
-Train size:  205
-Validation accuracy is:  100.0
-Validation fscore is:  1.0
-
-[[-30.43507442 -30.42814545 -32.584463     0.32593369]]
-
-=============================================================================================================
-
-'''

@@ -11,7 +11,7 @@ contains 4 defining features and 1 classification attribute. The dataset contain
 The model is defined in `logistic_regression.py` as `Model`.
 
 #### Hyperparameters
-- **Initialization**: zero initialization, random initialization
+- **Initialization**: zero initialization, random initialization (Gaussian or Uniform)
 - **Regularization**: L1, L2, None
 - Maximum number of iterations
 - Learning rate

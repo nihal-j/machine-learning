@@ -2,7 +2,7 @@ import numpy as np
 
 class Model:
     
-    def __init__(self, n_, activations_, w_={}, b_={}, learning_rate_=0.0001, max_iters_=1000):
+    def __init__(self, n_, activations_, w_={}, b_={}, learning_rate_=0.0001, initialization_='gaussian', max_iters_=1000):
         
         '''
             A Model is a deep neural network whose configuration is contained in `n`. Its paramters are
@@ -24,21 +24,36 @@ class Model:
         self.w = w_
         self.b = b_
         self.learning_rate = learning_rate_
+        self.initialization = initialization_
         self.max_iters = max_iters_
         self.initialize_parameters()
         
     
     def initialize_parameters(self):
+        '''
+            Type of initialization can be gaussian, uniform or He.
+        '''
     
         # the ith hidden layer should be of shape (n[i], n[i - 1])
         for i in range(1, self.L + 1):
-            self.w[i] = np.random.randn(self.n[i], self.n[i - 1])/np.sqrt(self.n[i])
-            # self.w[i] = np.random.randn(self.n[i], self.n[i - 1])*0.01
+
+            if self.initialization == 'gaussian':
+                self.w[i] = np.random.randn(self.n[i], self.n[i - 1])
+
+            elif self.initialization == 'uniform':
+                self.w[i] = np.random.rand(self.n[i], self.n[i - 1])
+
+            elif self.initialization == 'He':
+                self.w[i] = np.random.randn(self.n[i], self.n[i - 1])*np.sqrt(2/self.n[i-1])
+
             # self.b[i] = np.random.randn(self.n[i], 1)
             self.b[i] = np.zeros((self.n[i], 1))
             
             
     def sigmoid(self, a):
+        '''
+            Calculate sigmoid of `a`.
+        '''
 
         x = np.copy(a)
         x[x < -15] = -15
@@ -79,6 +94,9 @@ class Model:
         
 
     def derivative(self, a, layer):
+        '''
+            Calculate derivative for corresponding activation function.
+        '''
 
         if self.activations[layer] == 'relu':
             x = np.copy(a)
@@ -141,6 +159,9 @@ class Model:
         return preds
 
     def compute_cost(self, y, t):
+        '''
+            Compute binary cross entropy loss.
+        '''
 
         y = np.copy(y)
         y[y == 1] = 1 - 1e-20
@@ -152,7 +173,6 @@ class Model:
         
         print_costs = True
         print_step = self.max_iters/20
-        learning_rate_updated = False
         costs = np.zeros(self.max_iters)
         for i in range(self.max_iters):
             
@@ -161,11 +181,6 @@ class Model:
 
             if print_costs and i % print_step == 0:
                 print('Cost after iteration ', i, ': ', costs[i])
-
-            # if i > 0 and (costs[i] - costs[i - 1])/costs[i - 1] < 0.01 and learning_rate_updated == False:
-            if i > self.max_iters/2 and learning_rate_updated == False:
-                self.learning_rate *= 0.1
-                learning_rate_updated = True
 
             dw, db = self.back_propagate(a, z, t)
             self.update(dw, db)

@@ -1,3 +1,7 @@
+'''
+    File for experimentation.
+'''
+
 from neural_network import Model
 import numpy as np
 import matplotlib.pyplot as plt

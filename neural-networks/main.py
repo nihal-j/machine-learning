@@ -1,7 +1,7 @@
 from neural_network import Model
-from sklearn.model_selection import train_test_split
 import numpy as np
 import matplotlib.pyplot as plt
+np.random.seed(42)
 
 def normalize(data, method='min-max'):
     
@@ -61,9 +61,6 @@ def train_test_validation_split(X, t, test_ratio=0.15):
     X_test = X[train_size+val_size:, :]
     t_test = t[train_size+val_size:, :]
     
-    # X_train, X_test, t_train, t_test = train_test_split(X, t, test_size=test_ratio, random_state=0)
-    # X_valid, X_test, t_valid, t_test = train_test_split(X_test, t_test, test_size=0.5, random_state=0)
-    
     data = {
         'X_train': X_train,
         't_train': t_train,
@@ -114,21 +111,24 @@ if __name__ == '__main__':
 
     # from here each sample is a row
     X, t = segregate_target(data)
-    X = normalize(X)
     data = train_test_validation_split(X, t, test_ratio=0.15)
 
     # stacking each sample as a column
+    data['X_train'] = normalize(data['X_train'], method='standardization')
     X_train = data['X_train'].T
     t_train = data['t_train'].reshape(1,-1)
+    data['X_test'] = normalize(data['X_test'], method='standardization')
     X_test = data['X_test'].T
     t_test = data['t_test'].reshape(1,-1)
+    data['X_valid'] = normalize(data['X_valid'], method='standardization')
     X_val = data['X_valid'].T
     t_val = data['t_valid'].reshape(1, -1)
 
-    n_ = [10, 7, 6, 1]
-    activations_ = [None, 'relu', 'relu', 'sigmoid']
+    n_ = [10, 18, 1]
+    activations_ = [None, 'relu', 'sigmoid']
     eta_ = 0.0001
-    model = Model(n_, activations_, learning_rate_=eta_, max_iters_=5000)
+    initialization_ = 'He'
+    model = Model(n_, activations_, learning_rate_=eta_, initialization_=initialization_, max_iters_=3000)
     costs, preds = model.fit(X_train, t_train)
     print('Train size: ', X_train.shape[1])
     print('Training accuracy is: ', calculate_accuracy(preds, t_train))
@@ -154,11 +154,3 @@ if __name__ == '__main__':
     # plt.plot(regs, trains)
     plt.plot(costs)
     plt.show()
-
-    """
-    np.random.seed(3)
-    n_ = [10, 7, 6, 1]
-    activations_ = [None, 'relu', 'relu', 'sigmoid']
-    eta_ = 0.0001
-    model = Model(n_, activations_, learning_rate_=eta_, max_iters_=3000)
-    """
