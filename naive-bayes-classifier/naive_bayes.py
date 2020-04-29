@@ -1,6 +1,11 @@
 import numpy as np
 import string
 
+'''
+For bag of words, changes need to be made in 4 places
+(noted in comments)
+'''
+
 class Model:
     '''
         Model for sentiment analysis using Naive Bayes classification.
@@ -39,7 +44,7 @@ class Model:
                     self.dictionary[w] = idx
                     idx += 1
         # setting a feature for unknown words
-        self.dictionary['UNK'] = idx
+        # self.dictionary['UNK'] = idx
 
 
 
@@ -50,9 +55,10 @@ class Model:
         vector = np.zeros(len(self.dictionary))
         for w in s:
             if w not in self.dictionary:
-                vector[self.dictionary['UNK']] = 1
-                # pass
+                # vector[self.dictionary['UNK']] = 1
+                pass
             else:
+                # use the next one line for bag of words
                 # vector[self.dictionary[w]] += 1
                 vector[self.dictionary[w]] = 1
         return vector
@@ -75,12 +81,14 @@ class Model:
 
         denomY = countY
         denomN = countN
-        # denomY = 0
-        # denomN = 0
+        # use the next two lines for bag of words
+        # denomY = feature_count
+        # denomN = feature_count
 
         for i, vector in enumerate(vectors):
             # adding to frequencies of each word in the corresponding class
             likelihoods[labels[i]] = likelihoods[labels[i]] + vector
+            # use the next lines for bag of words
             # if labels[i]:
             #     denomY += np.sum(vector)
             # else:
@@ -90,6 +98,7 @@ class Model:
         probY = countY/len(labels)
         probN = countN/len(labels)
         # converting frequencies to probabilities
+        # remove the 2 for bag of words
         likelihoods[0] = (likelihoods[0] + 1)/(denomN + 2)
         likelihoods[1] = (likelihoods[1] + 1)/(denomY + 2)
 
