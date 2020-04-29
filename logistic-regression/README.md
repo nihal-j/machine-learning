@@ -41,12 +41,16 @@ While experimenting, the hyperparameters that were tuned were:
 |Name|Normalization|Learning Rate|Regularization|Lambda|Initialization|Number of Iterations|Training Accuracy|Validation Accuracy|Validation F1-score|
 |--|--|--|--|--|--|--|--|--|--|
 **Model 1**|Standardization|0.01|L2|0.01|Gaussian|1,000|97.8|99.5|0.995|
-**Model 2**|Standardization|0.01|L2|1|Gaussian|10,000|97.8|99.5|0.995|
+**Model 2**|Standardization|0.01|L2|1|Gaussian|1,000|97.8|99.5|0.995|
 **Model 3**|Standardization|0.01|L1|1|Gaussian|1,000|98.6|99.0|0.99|
 **Model 4**|Standardization|1|None|-|Gaussian|1,000|98.5|98.5|0.98|
 **Model 5**|Standardization|0.01|None|-|Gaussian|1,000|98.4|99.0|0.99|
 **Model 6**|Min-Max|0.01|None|-|Gaussian|1,000|97.8|99.5|0.995|
 **Model 7**|Standardization|0.01|None|-|Uniform|1,000|98.4|99.0|0.99|
+
+Best Model: **Model 2**
+**Test Accuracy: 100.0
+Test F1-score: 1.0**
 
 #### Plots
 
