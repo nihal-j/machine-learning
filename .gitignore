@@ -1,3 +1,4 @@
+**/*.html
 **/*.pickle
 **/tmp
 fishers-discriminant/tmp/

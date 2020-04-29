@@ -1,3 +1,7 @@
+'''
+    File for experimentation.
+'''
+
 import numpy as np
 from logistic_regression import Model
 import matplotlib.pyplot as plt

@@ -1,10 +1,6 @@
 import numpy as np
 from logistic_regression import Model
 import matplotlib.pyplot as plt
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report, confusion_matrix
-
-# from sklearn.model_selection import train_test_split
-
 np.random.seed(0)
 
 def normalize(data, method='min-max'):
@@ -21,13 +17,13 @@ def normalize(data, method='min-max'):
     '''
     
     if (method == 'min-max'):
-        numerator = data - np.min(data, axis=0)
-        denominator = np.max(data, axis=0) - np.min(data, axis=0)
+        numerator = data - np.min(data, axis=1).reshape(-1, 1)
+        denominator = (np.max(data, axis=1) - np.min(data, axis=1)).reshape(-1, 1)
         return numerator/denominator
     
     if (method == 'standardization'):
-        numerator = data - np.mean(data, axis=0)
-        denominator = np.std(data, axis=0)
+        numerator = data - np.mean(data, axis=1).reshape(-1, 1)
+        denominator = np.std(data, axis=1).reshape(-1, 1)
         return numerator/denominator
     
 
@@ -56,9 +52,6 @@ def train_test_validation_split(X, t, test_ratio=0.15):
     test_size = (int)(m*test_ratio)
     val_size = test_size
     train_size = m - (test_size + val_size)
-    
-    # X_train, X_test, t_train, t_test = train_test_split(X, t, test_size=test_ratio, random_state=42)
-    # X_valid, X_test, t_valid, t_test = train_test_split(X_test, t_test, test_size=0.5, random_state=42)
 
     perm = np.random.permutation(m)
     X = X[perm, :]
@@ -119,19 +112,22 @@ if __name__ == '__main__':
 
     # from here each sample is a row
     X, t = segregate_target(data)
-    X = normalize(X, method='standardization')
+    # X = normalize(X, method='standardization')
     data = train_test_validation_split(X, t, test_ratio=0.15)
 
     # stacking each sample as a column
     X_train = data['X_train'].T
+    X_train = normalize(X_train, method='standardization')
     t_train = data['t_train'].reshape(1,-1)
     X_test = data['X_test'].T
+    X_test = normalize(X_test, method='standardization')
     t_test = data['t_test'].reshape(1,-1)
     X_val = data['X_valid'].T
+    X_val = normalize(X_val, method='standardization')
     t_val = data['t_valid'].reshape(1, -1)
         
     # from here each sample is a column
-    model = Model(learning_rate=0.1, regularization='l1', lamb=0.001, random_init=False, maxIters=1000)
+    model = Model(learning_rate=0.01, regularization=None, lamb=1, random_init='uniform', maxIters=1000)
     preds, costs = model.fit(X_train, t_train)
     print('Train size: ', X_train.shape[1])
     print('Training accuracy is: ', calculate_accuracy(preds, t_train))
@@ -155,7 +151,6 @@ if __name__ == '__main__':
     # plt.xscale(value='log')
     plt.xlabel('Iterations')
     plt.ylabel('Loss')
-    plt.suptitle('Learning Rate=0.005, Regularization=None')
     # plt.plot(regs, trains)
     plt.plot(costs)
     plt.show()

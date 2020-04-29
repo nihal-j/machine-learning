@@ -151,7 +151,7 @@ class Model:
     def fit(self, X, t):
         
         print_costs = True
-        print_step = 1000
+        print_step = self.max_iters/20
         learning_rate_updated = False
         costs = np.zeros(self.max_iters)
         for i in range(self.max_iters):

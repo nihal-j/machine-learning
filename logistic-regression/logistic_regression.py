@@ -1,7 +1,5 @@
 import numpy as np
 
-np.random.seed(0)
-
 class Model:
 
     '''
@@ -13,7 +11,7 @@ class Model:
         These shapes are maintained throughout the class.
     '''
     
-    def __init__(self, learning_rate=0.1, lamb=0, regularization='l2', random_init=True, maxIters=10000):
+    def __init__(self, learning_rate=0.1, lamb=0, regularization='l2', random_init='gaussian', maxIters=10000):
 
         '''
             Arguments:
@@ -41,9 +39,11 @@ class Model:
             `b` is initialized as 0 always.
         '''
         
-        if self.random_init:
+        if self.random_init == 'gaussian':
             self.w = np.random.randn(dims).reshape(1, -1)
-        else:
+        elif self.random_init == 'uniform':
+            self.w = np.random.rand(dims).reshape(1, -1)
+        elif self.random_init == 'zero':
             self.w = np.zeros((1, dims))
         self.b = 0
     
@@ -68,7 +68,6 @@ class Model:
         
         M = X.shape[1]
         preds = np.zeros((1, M))
-        
         probabilities = self.sigmoid(np.dot(self.w, X) + self.b)
         
         for i in range(M):
@@ -90,7 +89,9 @@ class Model:
         
         self.initalize_parameters(N)
         costs = np.array([])
-        
+        print_costs = True
+        print_step = self.maxIters/20
+
         for iteration in range(self.maxIters):
             
             # forward calculation
@@ -100,12 +101,14 @@ class Model:
             if self.regularization == 'l2':
                 reg_term = self.lamb*np.dot(self.w, self.w.T)/2
             elif self.regularization == 'l1':
-                reg_term = self.lamb*np.sum(np.abs(self.w))/2
+                reg_term = self.lamb*np.sum(np.abs(self.w))
             elif self.regularization == None:
                 reg_term = 0
                 
             cost = -np.sum((t_train*np.log(y)) + ((1 - t_train)*np.log((1 - y)))) + reg_term
             costs = np.append(costs, cost)
+            if print_costs and iteration % print_step == 0:
+                print('Cost after iteration ', iteration, ': ', costs[iteration])
             
             # gradient calculation
             if self.regularization == 'l2':
@@ -114,6 +117,8 @@ class Model:
                 tmp = np.copy(self.w)
                 tmp[tmp == 0] = 1e-5
                 reg_term = self.lamb*(tmp/np.abs(tmp))
+            elif self.regularization == None:
+                reg_term = 0
                 
             dw = np.dot((y - t_train), X_train.T) + reg_term
             db = np.sum(y - t_train)
