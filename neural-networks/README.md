@@ -1,6 +1,6 @@
 # Neural Networks
 
-The objective of this project is to implement a nerual network model from scratch. The data used can be found in `data/`. It contains 10 defining features and 1 classification attribute (0/1). The dataset contains 1460 instances.
+The objective of this project is to implement a neural network model from scratch. The data used can be found in `data/`. It contains 10 defining features and 1 classification attribute (0/1). The dataset contains 1460 instances.
 
 ### Model Description
 
