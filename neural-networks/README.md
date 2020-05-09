@@ -9,7 +9,7 @@ The model is defined in `neural_network.py` as `Model`.
 #### Hyperparameters
 - **Neural network architecture**: number of hidden layers, number of units in each hidden layer
 - **Activation functions**: can be specified differently for each layer; ReLU or tanh or sigmoid
-- **Initialization**: random initialization
+- **Initialization**: `gaussiain` or `uniform` or `He`
 - **Regularization**: None
 - Maximum number of iterations
 - Learning rate

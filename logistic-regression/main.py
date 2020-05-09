@@ -127,7 +127,7 @@ if __name__ == '__main__':
     t_val = data['t_valid'].reshape(1, -1)
         
     # from here each sample is a column
-    model = Model(learning_rate=0.01, regularization='l2', lamb=1, random_init='uniform', maxIters=1000)
+    model = Model(learning_rate=0.01, regularization='l2', lamb=1, random_init='gaussian', maxIters=1000)
     preds, costs = model.fit(X_train, t_train)
     print('Train size: ', X_train.shape[1])
     print('Training accuracy is: ', calculate_accuracy(preds, t_train))

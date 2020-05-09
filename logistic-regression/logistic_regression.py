@@ -18,7 +18,7 @@ class Model:
                 learning_rate:
                 lamb:               Regularization parameter, lambda
                 regularization:     'l1' or 'l2' or None
-                random_init:        True if random (Gaussian) initialization of parameters is desired
+                random_init:        'gaussian', 'uniform' or 'zero'
                 maxIters:
         '''
         

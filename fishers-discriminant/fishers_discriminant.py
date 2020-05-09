@@ -37,6 +37,10 @@ class Model:
         X1 = np.array(X1)
         return X0.T, X1.T
 
+    def norm(self, x):
+
+        return np.linalg.norm(x)
+
 
     def learn_discriminant(self, X0, X1):
         # estimate means of each class
@@ -49,7 +53,7 @@ class Model:
         Sw = cv0 + cv1
         self.w = np.matmul(np.linalg.inv(Sw), mean1 - mean0).reshape(-1)
         # scale w so that w[0] = 1
-        self.scale = np.abs(1/self.w[0])
+        self.scale = 1/self.norm(self.w)
         self.w = self.w*self.scale
 
     def transform(self, data):
