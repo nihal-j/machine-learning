@@ -1,12 +1,8 @@
+**/tmp_/
+**/tmp/
 **/.vscode/
 **/__pycache__/
 **/.ipynb_checkpoints/
 **/*.html
 **/*.pickle
-**/tmp
-fishers-discriminant/tmp/
-neural-networks/tmp/
-logistic-regression/.ipynb_checkpoints/
-*.docx
-logistic-regression/tmp/
-logistic-regression/.vscode/
+**/*.docx
